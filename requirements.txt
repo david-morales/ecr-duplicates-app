@@ -1,0 +1,6 @@
+databricks-sql-connector
+databricks-sdk
+gradio
+pandas
+pyarrow
+flask
