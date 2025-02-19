@@ -169,20 +169,20 @@ def submit_occurrences():
 def remove_excluded_ids():
     """Remove a set of IDs from ecr_excluded_ids and log the action."""
     try:
-        print("1")
+
         req_data = request.get_json()
         occurrences_ids = req_data.get("occurrencesIDs", [])
         user_email = request.headers.get("X-Forwarded-Email", "unknown@example.com")
-        print("2")
+
 
         if not occurrences_ids:
             return jsonify({"message": "No occurrences selected for removal!"}), 400
 
-        print("3")
+
         # Remove occurrences IDs from excluded_ids
         remove_excluded_occurrences(occurrences_ids)
 
-        print("4")
+
         # Log action in audit table
         log_audit_action(user_email, "INCLUDE", occurrences_ids)
 
