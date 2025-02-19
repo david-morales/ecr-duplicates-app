@@ -1,4 +1,4 @@
-[
+{"total":4,"totalNotFiltered":4,"rows":[
     {
         "Aircraft_Registration": "Reg-6893",
         "Aircraft_category_Level_1": "Fixed Wing",
@@ -171,4 +171,4 @@
         "UTC_date": "Sat, 20 May 2023 00:00:00 GMT",
         "Year": 2023
     }
-]
+]}

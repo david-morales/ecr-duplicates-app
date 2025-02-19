@@ -1,4 +1,4 @@
-[
+{"total":7,"totalNotFiltered":7,"rows":[
     {
         "action": "EXCLUDE",
         "selected_ids": "[\"OC-219545724\"]",
@@ -41,4 +41,4 @@
         "time": "Tue, 18 Feb 2025 14:54:17 GMT",
         "user": "unknown@example.com"
     }
-]
+]}
