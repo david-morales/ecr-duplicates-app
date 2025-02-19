@@ -1,0 +1,44 @@
+[
+    {
+        "action": "EXCLUDE",
+        "selected_ids": "[\"OC-219545724\"]",
+        "time": "Wed, 19 Feb 2025 10:30:35 GMT",
+        "user": "dmorales@paradigmadigital.com"
+    },
+    {
+        "action": "EXCLUDE",
+        "selected_ids": "[\"OC-977815583\", \"OC-361747170\"]",
+        "time": "Tue, 18 Feb 2025 15:12:01 GMT",
+        "user": "unknown@example.com"
+    },
+    {
+        "action": "INCLUDE",
+        "selected_ids": "[\"OC-219545724\"]",
+        "time": "Tue, 18 Feb 2025 15:08:29 GMT",
+        "user": "unknown@example.com"
+    },
+    {
+        "action": "INCLUDE",
+        "selected_ids": "[\"OC-803557544\", \"OC-642197573\"]",
+        "time": "Tue, 18 Feb 2025 15:06:45 GMT",
+        "user": "unknown@example.com"
+    },
+    {
+        "action": "INCLUDE",
+        "selected_ids": "[\"OC-803557544\", \"OC-642197573\"]",
+        "time": "Tue, 18 Feb 2025 15:04:22 GMT",
+        "user": "unknown@example.com"
+    },
+    {
+        "action": "EXCLUDE",
+        "selected_ids": "[\"OC-642197573\"]",
+        "time": "Tue, 18 Feb 2025 15:02:25 GMT",
+        "user": "unknown@example.com"
+    },
+    {
+        "action": "EXCLUDE",
+        "selected_ids": "[\"OC-803557544\", \"OC-923864890\", \"OC-219545724\"]",
+        "time": "Tue, 18 Feb 2025 14:54:17 GMT",
+        "user": "unknown@example.com"
+    }
+]
