@@ -5,6 +5,8 @@ import json
 from databricks import sql
 from databricks.sdk.core import Config
 
+flask_app = Flask(__name__)
+
 # Ensure the environment variable is set
 assert os.getenv('DATABRICKS_WAREHOUSE_ID'), "DATABRICKS_WAREHOUSE_ID must be set in app.yaml."
 
@@ -195,4 +197,4 @@ def remove_excluded_ids():
 # --------------------------------------
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    flask_app.run(debug=True)

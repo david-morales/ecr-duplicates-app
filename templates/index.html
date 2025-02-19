@@ -7,6 +7,8 @@
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+
     
     <!-- jQuery (Required for Bootstrap Table) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -16,8 +18,26 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Bootstrap Table -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.21.2/dist/bootstrap-table.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.21.2/dist/bootstrap-table.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.0/dist/bootstrap-table.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.0/dist/bootstrap-table.min.js"></script>
+
+    <!-- Include Bootstrap Table Fixed Columns Extension -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.0/dist/extensions/sticky-header/bootstrap-table-sticky-header.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.0/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.0/dist/extensions/toolbar/bootstrap-table-toolbar.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/libs/jsPDF/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.0/dist/extensions/export/bootstrap-table-export.min.js"></script>
+
+
+
+
 </head>
 <body>
     <div class="container mt-4">
@@ -43,22 +63,28 @@
             <!-- Occurrences Tab -->
             <div class="tab-pane fade show active" id="occurrences" role="tabpanel">
                 <h2 class="text-center">Occurrence Data</h2>
-
-                <!-- Toolbar for Table Options -->
-                <div id="occurrence_toolbar" class="d-flex flex-wrap gap-2 mb-2">
-                    <button id="clear-filters" class="btn btn-secondary">Clear Filters</button>
-                </div>
+             
 
                 <div class="table-container p-3 shadow">
                     <table id="occurrence_table"
                            class="table table-striped table-bordered"
                            data-toggle="table"
-                           data-toolbar="#occurrence_toolbar"
+                           data-show-button-icons="true"
                            data-search="true"
+                           data-show-search-button="true"
+                           data-click-to-select="true"
                            data-pagination="true"
                            data-sortable="true"
                            data-show-columns="true"
-                           data-show-columns-toggle-all="true">
+                           data-show-columns-toggle-all="true"
+                           data-sticky-header="true"
+                           data-fixed-columns="true"
+                           data-fixed-number="4"
+                           data-advanced-search="true"
+                           data-id-table="advancedTable"
+                           data-show-fullscreen="true"
+                           data-icons-prefix="fa"
+                           data-loading-template="loadingTemplate">
                         <thead>
                             <tr>
                                 <th data-field="select" data-checkbox="true"></th>
@@ -181,6 +207,8 @@
     </div>
 
 <script>
+
+
     $(document).ready(function() {
         // Initialize Bootstrap Tables
         $('#occurrence_table').bootstrapTable();
