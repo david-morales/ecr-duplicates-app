@@ -84,7 +84,8 @@
                            data-id-table="advancedTable"
                            data-show-fullscreen="true"
                            data-icons-prefix="fa"
-                           data-loading-template="loadingTemplate">
+                           data-loading-template="loadingTemplate"
+                           data-url="/get_occurrences">
                         <thead>
                             <tr>
                                 <th data-field="select" data-checkbox="true"></th>
@@ -104,27 +105,6 @@
                                 <th data-field="Year" data-sortable="true">Year</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% for row in data %}
-                            <tr>
-                                <td></td>
-                                <td>{{ row["E2_Occurrence_ID"] }}</td>
-                                <td>{{ row["File_number"] }}</td>
-                                <td>{{ row["UTC_date"] }}</td>
-                                <td>{{ row["Local_date"] }}</td>
-                                <td>{{ row["State_area_of_occ"] }}</td>
-                                <td>{{ row["Location"] }}</td>
-                                <td>{{ row["Occurrence_class"] }}</td>
-                                <td>{{ row["Injury_Level"] }}</td>
-                                <td>{{ row["Highest_damage"] }}</td>
-                                <td>{{ row["Occurrence_Category"] }}</td>
-                                <td>{{ row["Aircraft_Registration"] }}</td>
-                                <td>{{ row["Operator_Name"] }}</td>
-                                <td>{{ row["Flight_phase"] }}</td>
-                                <td>{{ row["Year"] }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
                     </table>
                 </div>
                 <!-- Submit Button -->
@@ -142,7 +122,8 @@
                            data-toggle="table"
                            data-search="true"
                            data-pagination="true"
-                           data-sortable="true">
+                           data-sortable="true"
+                           data-url="/get_audit_records">
                         <thead>
                             <tr>
                                 <th data-field="user" data-sortable="true">User</th>
@@ -150,17 +131,7 @@
                                 <th data-field="action" data-sortable="true">Action</th>
                                 <th data-field="selected_ids" data-sortable="true">Selected IDs</th>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {% for record in audit_data %}
-                            <tr>
-                                <td>{{ record["user"] }}</td>
-                                <td>{{ record["time"] }}</td>
-                                <td>{{ record["action"] }}</td>
-                                <td>{{ record["selected_ids"] }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
+                        </thead>                        
                     </table>
                 </div>
             </div>
@@ -179,7 +150,8 @@
                            data-pagination="true"
                            data-sortable="true"
                            data-show-columns="true"
-                           data-show-columns-toggle-all="true">
+                           data-show-columns-toggle-all="true"
+                           data-url="/get_excluded_ids">
                         <thead>
                             <tr>
                                 <th data-field="select" data-checkbox="true"></th>
@@ -210,39 +182,13 @@
 
 
     $(document).ready(function() {
+
         // Initialize Bootstrap Tables
         $('#occurrence_table').bootstrapTable();
         $('#audit_table').bootstrapTable();
-
-        // Refresh Audit Logs when clicking on the tab
-        $('#audit-tab').on('click', function() {
-            $.ajax({
-                url: '/get_audit_records',
-                type: 'GET',
-                success: function(data) {
-                    $('#audit_table').bootstrapTable('load', data);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching audit logs: " + error);
-                }
-            });
-        });
-
         $('#excluded_table').bootstrapTable();
 
-        // Refresh Excluded records when clicking on the tab
-        $('#excluded-tab').on('click', function() {
-            $.ajax({
-                url: '/get_excluded_ids',
-                type: 'GET',
-                success: function(data) {
-                    $('#excluded_table').bootstrapTable('load', data);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching excluded records: " + error);
-                }
-            });
-        });
+
 
         // Clear Filters Button
         $('#clear-filters').on('click', function() {
