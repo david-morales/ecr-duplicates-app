@@ -117,7 +117,7 @@ def home():
     audit_logs = fetch_audit_logs()
     excluded = fetch_excluded_records()
 
-    return render_template("index_front.html", 
+    return render_template("index.html", 
                            user_email=user_email, 
                            data=occurrences.to_dict(orient="records"),
                            audit_data=audit_logs.to_dict(orient="records"),
