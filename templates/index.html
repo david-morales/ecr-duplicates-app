@@ -309,7 +309,7 @@
         }
 
         $('#remove-selected').on('click', function() {
-            var selectedIDs = getSelectedExcludedRecords("excluded_table");
+            var selectedIDs = getSelectedExcludedRecords();
             if (selectedIDs.length === 0) {
                 alert("Please select at least one record.");
                 return;
