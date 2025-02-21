@@ -35,6 +35,7 @@ def execute_query(query: str, values: tuple = (), fetch: bool = False):
     except Exception as e:
         print(f"❌ Database Error: {e}")
         return None
+    
 
 # --------------------------------------
 # HELPER FUNCTIONS
@@ -43,6 +44,7 @@ def execute_query(query: str, values: tuple = (), fetch: bool = False):
 def fetch_occurrences():
     """Retrieve all occurrences from Databricks."""
     return execute_query("SELECT * FROM workspace.default.ecr_key_stats", fetch=True)
+
 
 def fetch_excluded_records():
     """Retrieve full records of excluded occurrences using JOIN with ecr_key_stats."""
@@ -115,11 +117,21 @@ def home():
     audit_logs = fetch_audit_logs()
     excluded = fetch_excluded_records()
 
-    return render_template("index.html", 
+    return render_template("index_front.html", 
                            user_email=user_email, 
                            data=occurrences.to_dict(orient="records"),
                            audit_data=audit_logs.to_dict(orient="records"),
                            excluded_records=excluded.to_dict(orient="records"),)
+
+
+@app.route('/get_occurrences', methods=['GET'])
+def get_occurrences():
+    """Retrieve the ecr occurrences."""
+    try:
+        occurrences = fetch_occurrences()
+        return jsonify(occurrences.to_dict(orient="records"))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/get_audit_records', methods=['GET'])
 def get_audit_records():
