@@ -29,39 +29,48 @@ const handleChekcBoxStyles = (table) => {
     });
 };
 
-const handlerForm = (form) => {
-    const fomId = `#${form.attr('id')}`;
-    
-    form.on('submit', (e) => {
-        e.preventDefault(); // Evita el envío predeterminado
-      
-        // Obtener todos los checkboxes seleccionados en la tabla
-        let selectedRows = [];
-      
-        $(`${fomId} tbody input[type="checkbox"]:checked`).each(function() {
-          let $row = $(this).closest('tr'); // Obtener la fila donde está el checkbox
-          let rowData = {};
-      
-          // Recorrer las celdas de la fila y obtener los valores
-          $row.find('td').each(function(index) {
-            let columnName = $(`${fomId} thead th:nth-child(${index + 2})`).text().trim().replace(" ", "_");
-            if (columnName) rowData[columnName] = $(this).text().trim();
-          });
-      
-          selectedRows.push(rowData);
-        });
-      
-        if (selectedRows.length) {
-          console.log("Sending..", selectedRows);
-          if(!$(`${fomId} .alert`).hasClass("d-none" )){
-            $(`${fomId} .alert`).addClass("d-none" );
-          }
-        } else {
-            $(`${fomId} .alert`).removeClass("d-none" );
-        }
-      });
+function getSelectedoccurrencesIDs() {
+    var selectedData = $('#occurrence_table').bootstrapTable('getSelections');
+    return selectedData.map(row => row.E2_Occurrence_ID);
 }
 
+
+const handlerForm = (form) => {
+    const fomId = `#${form.attr('id')}`;
+    let url = '';
+
+    if(form.attr('id') === "occurrence-form") {
+        url = '/submit_occurrences'
+    } else if(form.attr('id') === "excluded-form") {
+        url = '/remove_excluded_ids'
+    }
+    
+    form.on('submit', (e) => {
+        e.preventDefault(); 
+
+        var selectedIDs = getSelectedoccurrencesIDs();
+        if (selectedIDs.length === 0) {
+            $(`${fomId} .alert`).removeClass("d-none" );
+            return;
+        } else {
+            if(!$(`${fomId} .alert`).hasClass("d-none" )){
+                $(`${fomId} .alert`).addClass("d-none" );
+              }
+              $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ "occurrencesIDs": selectedIDs }),
+                success: function(response) {
+                    alert(response.message);
+                },
+                error: function(xhr, status, error) {
+                    alert("Error: " + error);
+                }
+            });
+        }
+    });
+}
 
 // Al hacer clic en las pestañas, se cargan las tablas correspondientes
 $(document).ready(function()  {

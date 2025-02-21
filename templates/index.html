@@ -274,33 +274,8 @@
             $('#occurrence_table').bootstrapTable('resetSearch');
         });
 
-        // Get Selected Rows
-        function getSelectedoccurrencesIDs() {
-            var selectedData = $('#occurrence_table').bootstrapTable('getSelections');
-            return selectedData.map(row => row.E2_Occurrence_ID);
-        }
-
         // Submit selected occurrences
-        $('#submit-ocurrences').on('click', function() {
-            var selectedIDs = getSelectedoccurrencesIDs();
-            if (selectedIDs.length === 0) {
-                alert("Please select at least one record.");
-                return;
-            }
-
-            $.ajax({
-                url: '/submit_occurrences',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ "occurrencesIDs": selectedIDs }),
-                success: function(response) {
-                    alert(response.message);
-                },
-                error: function(xhr, status, error) {
-                    alert("Error: " + error);
-                }
-            });
-        });
+      
 
         // Get Selected Rows
         function getSelectedExcludedRecords() {
