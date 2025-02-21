@@ -34,10 +34,16 @@ function getSelectedoccurrencesIDs() {
     return selectedData.map(row => row.E2_Occurrence_ID);
 }
 
+function getSelectedExcludedRecords() {
+    var selectedData = $('#excluded_table').bootstrapTable('getSelections');
+    return selectedData.map(row => row.E2_Occurrence_ID);
+}
+
 
 const handlerForm = (form) => {
     const fomId = `#${form.attr('id')}`;
     let url = '';
+    let selectedIDs;
 
     if(form.attr('id') === "occurrence-form") {
         url = '/submit_occurrences'
@@ -47,8 +53,13 @@ const handlerForm = (form) => {
     
     form.on('submit', (e) => {
         e.preventDefault(); 
-
-        var selectedIDs = getSelectedoccurrencesIDs();
+        
+        if(url === "/submit_occurrences") { 
+            selectedIDs = getSelectedoccurrencesIDs();
+        } else {
+            selectedIDs = getSelectedExcludedRecords();
+        }
+      
         if (selectedIDs.length === 0) {
             $(`${fomId} .alert`).removeClass("d-none" );
             return;

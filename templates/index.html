@@ -278,31 +278,7 @@
       
 
         // Get Selected Rows
-        function getSelectedExcludedRecords() {
-            var selectedData = $('#excluded_table').bootstrapTable('getSelections');
-            return selectedData.map(row => row.E2_Occurrence_ID);
-        }
 
-        $('#remove-selected').on('click', function() {
-            var selectedIDs = getSelectedExcludedRecords();
-            if (selectedIDs.length === 0) {
-                alert("Please select at least one record.");
-                return;
-            }
-
-            $.ajax({
-                url: '/remove_excluded_ids',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ "occurrencesIDs": selectedIDs }),
-                success: function(response) {
-                    alert(response.message);
-                },
-                error: function(xhr, status, error) {
-                    alert("Error: " + error);
-                }
-            });
-        });
     });
 
 
