@@ -69,98 +69,6 @@ body {
     border: none;
   }
   
-  input[type="checkbox"]:not(.dropdown-menu input){
-    opacity: 0;
-    position: absolute;
-  }
-  
-  input[type="checkbox"] + label {
-    position: relative;
-    display: inline-block;
-    user-select: none;
-    -moz-transition: 0.4s ease;
-    -o-transition: 0.4s ease;
-    -webkit-transition: 0.4sease;
-    transition: 0.4sease;
-    -webkit-tap-highlight-color: transparent;
-    height: 22px;
-    width: 46PX;
-    border: 1px solid #e4e4e4;
-    border-radius: 60px;
-  }
-  
-  input[type="checkbox"] + label::before {
-    content: "";
-    position: absolute;
-    display: block;
-    -moz-transition: 0.2s cubic-bezier(0.24, 0, 0.5, 1);
-    -o-transition: 0.2s cubic-bezier(0.24, 0, 0.5, 1);
-    -webkit-transition: 0.2scubic-bezier(0.24, 0, 0.5, 1);
-    transition: 0.2scubic-bezier(0.24, 0, 0.5, 1);
-    height: 22px;
-    width: 46PX;
-    top: 0;
-    left: 0;
-    border-radius: 30px;
-  }
-  
-  input[type="checkbox"] + label::after {
-    content: "";
-    position: absolute;
-    display: block;
-    box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.1), 0 4px 0px 0 hsla(0, 0%, 0%, 0.04), 0 4px 9px hsla(0, 0%, 0%, 0.13), 0 3px 3px hsla(0, 0%, 0%, 0.05);
-    -moz-transition: 0.35s cubic-bezier(0.54, 1.6, 0.5, 1);
-    -o-transition: 0.35s cubic-bezier(0.54, 1.6, 0.5, 1);
-    -webkit-transition: 0.35scubic-bezier(0.54, 1.6, 0.5, 1);
-    transition: 0.35scubic-bezier(0.54, 1.6, 0.5, 1);
-    background: whitesmoke;
-    height: 18px;
-    width: 18px;
-    top: 1px;
-    left: 0px;
-    border-radius: 60px;
-  }
-  
-  .fixed-table-pagination {
-    margin-top: 2rem;
-  }
-  
-  .bootstrap-table .bs-checkbox input[type="checkbox"]:not([data-field="transactionID"]) {
-    display: none; 
-  }
-  
-  .bootstrap-table .bs-checkbox input[type="checkbox"] + label {
-    position: relative;
-    cursor: pointer;
-    display: inline-block;
-    width: 46px;
-    height: 24px;
-    background-color: #ddd;
-    border-radius: 50px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .bootstrap-table .bs-checkbox input[type="checkbox"] + label:after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 4px;
-    width: 18px;
-    height: 18px;
-    background-color: white;
-    border-radius: 50%;
-    transition: transform 0.3s ease;
-  }
-  
-  /* Estilo cuando el checkbox está seleccionado */
-  .bootstrap-table .bs-checkbox input[type="checkbox"]:checked + label {
-    background-color: #365B91;
-  }
-  
-  .bootstrap-table .bs-checkbox input[type="checkbox"]:checked + label:after {
-    transform: translateX(20px);
-  }
-  
   .bootstrap-table .fixed-table-container.fixed-height.has-card-view {
     padding-bottom: 0 !important;
   }
@@ -196,3 +104,325 @@ body {
   .fixed-table-body::-webkit-scrollbar-track {
     background: transparent; /* Sin fondo en el track */
   }
+
+
+  /* Hide the default checkbox */
+input[type="checkbox"]:not(.dropdown-menu input) {
+  opacity: 0;
+  position: absolute;
+}
+
+/* Custom checkbox container */
+.custom-checkbox {
+  position: relative;
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #007bff;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Checkmark using FontAwesome icon */
+.custom-checkbox::before {
+  content: '\f00c'; /* FontAwesome check icon */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 14px;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Checked state styling */
+input[type="checkbox"]:checked + .custom-checkbox {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+input[type="checkbox"]:checked + .custom-checkbox::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+
+/* Styling for frozen columns */
+.dataTables_wrapper .dataTables_scrollHeadInner {
+    background-color: #f8f9fa; /* Light background for headers */
+}
+
+.dtfc-fixed-left {
+    background-color: #e9ecef; /* Light gray background for frozen columns */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Fullscreen Table Styles */
+:fullscreen {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
+.dataTables_scrollHeadInner {
+    width: 100% !important;
+}
+
+.dataTables_fixedHeader {
+    z-index: 1050;
+}
+
+
+
+#occurrence_table_wrapper:fullscreen {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+#submit-ocurrences {
+    margin-bottom: 1rem;
+}
+
+/* Keep the submit button consistently above the table buttons */
+.dt-buttons {
+    margin-bottom: 1rem;
+}
+
+
+/* Style for SearchPanes container */
+div.dtsp-panesContainer {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styling */
+div.dtsp-title {
+    font-weight: bold;
+    color: #365B91;
+    margin-bottom: 10px;
+}
+
+
+/* Highlighted submit button style */
+.btn-highlight {
+    background-color: #28a745 !important; /* Green */
+    border-color: #28a745 !important;
+    color: #fff !important;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.6);
+}
+
+
+/* Style for the Deselect All button */
+.dt-button:contains('Deselect All') {
+    background-color: #dc3545 !important; /* Red */
+    color: #fff !important;
+    border-color: #dc3545 !important;
+}
+
+
+/* Loading spinner inside the submit button */
+.btn-loading {
+    position: relative;
+    pointer-events: none; /* Disable button clicks while loading */
+    opacity: 0.7;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spinner 0.6s linear infinite;
+}
+
+/* Spinner animation */
+@keyframes spinner {
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+
+/* Highlighted submit button for excluded records */
+#remove-selected.btn-highlight {
+    background-color: #dc3545 !important; /* Red */
+    border-color: #dc3545 !important;
+    color: #fff !important;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.6);
+}
+
+
+/* Toast Styling */
+.toast {
+    min-width: 300px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.toast-body {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.toast-success {
+    background-color: #28a745 !important;
+}
+
+.toast-error {
+    background-color: #dc3545 !important;
+}
+
+.toast-info {
+    background-color: #365B91 !important;
+}
+
+
+/* Full-width EASA Header */
+.easa-header {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.easa-logo {
+    height: 50px;
+    margin-left: 20px;
+}
+
+.easa-header-bottom {
+    background-color: #4D89C8; /* Light blue background */
+    padding: 10px 20px;
+    text-align: left;
+}
+
+.easa-header-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4D89C8;
+    padding: 10px 20px;
+}
+
+.system-title {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+    padding-left: 20px;
+}
+
+#user-greeting {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Updated Header Menu Using Flexbox */
+.easa-header-top {
+    background-color: #375A89;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.launcher {
+    position: relative;
+    text-align: center;
+    color: white;
+}
+
+.launcher .button {
+    cursor: pointer;
+    width: 32px;
+    margin: 0 auto;
+}
+
+.app-launcher {
+    position: absolute;
+    right: 0;
+    top: 50px;
+    display: none;
+    z-index: 9999; /* Higher priority */
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Add shadow for visibility */
+}
+
+.apps {
+    position: relative;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.2);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    width: 320px;
+    height: 396px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+}
+
+.apps ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.apps ul li {
+    display: inline-block;
+    width: 88px;
+    height: 88px;
+    text-align: center;
+    padding: 10px;
+}
+
+.apps .more {
+    display: block;
+    background: #f5f5f5;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+}
+
+.hide {
+    display: none;
+}
+
+
+/* Post-it note style */
+.post-it-note {
+    background-color: #FFFB88; /* Light yellow background */
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3); /* Drop shadow */
+    transform: rotate(-2deg); /* Slight rotation */
+    border: 1px solid #E6E600; /* Subtle border */
+    padding: 25px;
+    font-family: 'Comic Sans MS', cursive, sans-serif; /* Casual font for note feel */
+    width: 500px;
+    margin: 0 auto;
+    color: #333;
+}
+
+/* Ensure the button stands out */
+.btn-info {
+    background-color: #000000;
+    border-color: #365B91;
+    color: #ffffff;
+}
