@@ -4,13 +4,21 @@ import os
 import json
 from databricks import sql
 from databricks.sdk.core import Config
+from functools import lru_cache
+from time import time
 
 flask_app = Flask(__name__)
 
 # Ensure the environment variable is set
 assert os.getenv('DATABRICKS_WAREHOUSE_ID'), "DATABRICKS_WAREHOUSE_ID must be set in app.yaml."
 
-app = Flask(__name__)
+# Cache setup for audit logs and excluded records
+cache = {
+    "audit_logs": {"data": None, "timestamp": 0},
+    "excluded_records": {"data": None, "timestamp": 0}
+}
+CACHE_TIMEOUT = 300  # 5 minutes
+
 
 # --------------------------------------
 # DATABASE CONNECTION FUNCTIONS
@@ -25,6 +33,7 @@ def get_connection():
         credentials_provider=lambda: cfg.authenticate
     )
 
+
 def execute_query(query: str, values: tuple = (), fetch: bool = False):
     """Execute a SQL query. Fetch results if needed."""
     try:
@@ -35,29 +44,60 @@ def execute_query(query: str, values: tuple = (), fetch: bool = False):
     except Exception as e:
         print(f"❌ Database Error: {e}")
         return None
-    
+
 
 # --------------------------------------
-# HELPER FUNCTIONS
+# CACHING FUNCTIONS
 # --------------------------------------
 
+def cache_is_valid(key):
+    """Check if cache for a specific key is still valid."""
+    return (time() - cache[key]["timestamp"]) < CACHE_TIMEOUT
+
+
+def invalidate_cache(keys):
+    """Invalidate cache for specific keys."""
+    for key in keys:
+        cache[key]["data"] = None
+        cache[key]["timestamp"] = 0
+
+
+@lru_cache(maxsize=1)
 def fetch_occurrences():
-    """Retrieve all occurrences from Databricks."""
+    """Retrieve all occurrences from Databricks (cached indefinitely)."""
     return execute_query("SELECT * FROM workspace.default.ecr_key_stats", fetch=True)
 
 
 def fetch_excluded_records():
-    """Retrieve full records of excluded occurrences using JOIN with ecr_key_stats."""
+    """Retrieve full records of excluded occurrences using JOIN with ecr_key_stats (cached with expiration)."""
+    if cache_is_valid("excluded_records") and cache["excluded_records"]["data"] is not None:
+        return cache["excluded_records"]["data"]
+
     query = """
     SELECT ks.*
     FROM workspace.default.ecr_key_stats ks
     INNER JOIN workspace.default.ecr_excluded_ids ex ON ks.E2_Occurrence_ID = ex.E2_Occurrence_ID
     """
-    return execute_query(query, fetch=True)
+    excluded_data = execute_query(query, fetch=True)
+    cache["excluded_records"]["data"] = excluded_data
+    cache["excluded_records"]["timestamp"] = time()
+    return excluded_data
+
 
 def fetch_audit_logs():
-    """Retrieve the latest audit logs."""
-    return execute_query("SELECT * FROM workspace.default.audit ORDER BY time DESC", fetch=True)
+    """Retrieve the latest audit logs (cached with expiration)."""
+    if cache_is_valid("audit_logs") and cache["audit_logs"]["data"] is not None:
+        return cache["audit_logs"]["data"]
+
+    audit_data = execute_query("SELECT * FROM workspace.default.audit ORDER BY time DESC", fetch=True)
+    cache["audit_logs"]["data"] = audit_data
+    cache["audit_logs"]["timestamp"] = time()
+    return audit_data
+
+
+# --------------------------------------
+# HELPER FUNCTIONS
+# --------------------------------------
 
 def merge_occurrences(occurrences_ids):
     """Use MERGE to insert only new occurrences IDs in Databricks."""
@@ -91,12 +131,13 @@ def remove_excluded_occurrences(occurrences_ids):
 
     execute_query(delete_query)
 
+
 def log_audit_action(user_email, requested_action, occurrences_ids):
     """Log user actions in the audit table."""
     if not occurrences_ids:
         return
 
-    selected_ids_str = json.dumps(occurrences_ids)  # Convert list to JSON format
+    selected_ids_str = json.dumps(occurrences_ids)
 
     audit_query = """
     INSERT INTO workspace.default.audit (user, time, action, selected_ids)
@@ -109,49 +150,54 @@ def log_audit_action(user_email, requested_action, occurrences_ids):
 # ROUTES
 # --------------------------------------
 
-@app.route('/')
+@flask_app.route('/')
 def home():
     """Render the home page with occurrences data and audit logs."""
-    user_email = request.headers.get("X-Forwarded-Email", "Guest")
+    user_email = request.headers.get("X-Forwarded-Email", "guest@guest.com")
+    user_name = request.headers.get("X-Forwarded-User", "Guest")
     occurrences = fetch_occurrences()
     audit_logs = fetch_audit_logs()
     excluded = fetch_excluded_records()
 
     return render_template("index.html", 
                            user_email=user_email, 
+                           user_name=user_name,
                            data=occurrences.to_dict(orient="records"),
                            audit_data=audit_logs.to_dict(orient="records"),
                            excluded_records=excluded.to_dict(orient="records"),)
 
 
-@app.route('/get_occurrences', methods=['GET'])
+@flask_app.route('/get_occurrences', methods=['GET'])
 def get_occurrences():
     """Retrieve the ecr occurrences."""
     try:
         occurrences = fetch_occurrences()
-        return jsonify(occurrences.to_dict(orient="records"))
+        return jsonify({"data": occurrences.to_dict(orient="records")})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/get_audit_records', methods=['GET'])
+
+@flask_app.route('/get_audit_records', methods=['GET'])
 def get_audit_records():
     """Retrieve the latest audit records."""
     try:
         audit_logs = fetch_audit_logs()
-        return jsonify(audit_logs.to_dict(orient="records"))
+        return jsonify({"data": audit_logs.to_dict(orient="records")})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/get_excluded_ids', methods=['GET'])
+
+@flask_app.route('/get_excluded_ids', methods=['GET'])
 def get_excluded_ids():
     """Retrieve the full records of excluded occurrences."""
     try:
         excluded_records = fetch_excluded_records()
-        return jsonify(excluded_records.to_dict(orient="records"))
+        return jsonify({"data": excluded_records.to_dict(orient="records")})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/submit_occurrences', methods=['POST'])
+
+@flask_app.route('/submit_occurrences', methods=['POST'])
 def submit_occurrences():
     """Handle submission of selected occurrences."""
     try:
@@ -162,14 +208,11 @@ def submit_occurrences():
         if not occurrences_ids:
             return jsonify({"message": "No occurrences selected!"}), 400
 
-        # Insert occurrences IDs using MERGE
         merge_occurrences(occurrences_ids)
-
-        # Convert occurrences IDs list to a string format like "[1, 2, 3]"
-        selected_ids_str = json.dumps(occurrences_ids)
-
-         # Log action in audit table
         log_audit_action(user_email, "EXCLUDE", occurrences_ids)
+
+        # Invalidate audit and excluded records cache
+        invalidate_cache(["audit_logs", "excluded_records"])
 
         return jsonify({"message": f"✅ Successfully recorded {len(occurrences_ids)} occurrences and added audit record."})
 
@@ -177,26 +220,22 @@ def submit_occurrences():
         return jsonify({"message": f"❌ Error: {str(e)}"}), 500
 
 
-@app.route('/remove_excluded_ids', methods=['POST'])
+@flask_app.route('/remove_excluded_ids', methods=['POST'])
 def remove_excluded_ids():
     """Remove a set of IDs from ecr_excluded_ids and log the action."""
     try:
-
         req_data = request.get_json()
         occurrences_ids = req_data.get("occurrencesIDs", [])
         user_email = request.headers.get("X-Forwarded-Email", "unknown@example.com")
 
-
         if not occurrences_ids:
             return jsonify({"message": "No occurrences selected for removal!"}), 400
 
-
-        # Remove occurrences IDs from excluded_ids
         remove_excluded_occurrences(occurrences_ids)
-
-
-        # Log action in audit table
         log_audit_action(user_email, "INCLUDE", occurrences_ids)
+
+        # Invalidate audit and excluded records cache
+        invalidate_cache(["audit_logs", "excluded_records"])
 
         return jsonify({"message": f"✅ Successfully removed {len(occurrences_ids)} occurrences and added audit record."})
 
