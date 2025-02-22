@@ -154,7 +154,7 @@ def log_audit_action(user_email, requested_action, occurrences_ids):
 def home():
     """Render the home page with occurrences data and audit logs."""
     user_email = request.headers.get("X-Forwarded-Email", "guest@guest.com")
-    user_name = request.headers.get("X-Forwarded-User", "Guest")
+    user_name = request.headers.get("X-Forwarded-Preferred-Username", "Guest")
     occurrences = fetch_occurrences()
     audit_logs = fetch_audit_logs()
     excluded = fetch_excluded_records()
