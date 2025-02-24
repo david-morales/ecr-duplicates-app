@@ -426,3 +426,10 @@ div.dtsp-title {
     border-color: #365B91;
     color: #ffffff;
 }
+
+
+/* Custom max-width for container with mt-4 */
+.container.mt-4 {
+    max-width: 1400px;  /* Set your desired max-width */
+    margin: 0 auto;     /* Center the container */
+}
