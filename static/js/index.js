@@ -369,34 +369,45 @@ $(document).ready(function () {
     });
 
 
-    function toggleFullScreen(elementId, tableInstance, tableSelector) {
-        let element = document.getElementById(elementId);
-        let $toastContainer = $('#toast-container');
+function toggleFullScreen(elementId) {
+    let element = document.getElementById(elementId);
+    let $toastContainer = $('#toast-container');
 
-        if (!document.fullscreenElement) {
-            if (element.requestFullscreen) {
-                element.requestFullscreen().then(() => {
-                    $toastContainer.detach().appendTo($(element));
+    // Determine the correct table instance
+    let tableInstance;
+    if (elementId === 'occurrences') {
+        tableInstance = $occurrenceTable;
+    } else if (elementId === 'audit') {
+        tableInstance = $auditTable;
+    } else if (elementId === 'excluded') {
+        tableInstance = $excludedTable;
+    }
 
-                    // Force table redraw and fixedHeader recalculation after fullscreen
-                    setTimeout(() => {
-                        tableInstance.columns.adjust().draw();
-                        tableInstance.fixedHeader.adjust();
-                    }, 500);
-                });
-            }
-        } else {
-            document.exitFullscreen().then(() => {
-                $toastContainer.detach().appendTo('body');
+    if (!document.fullscreenElement) {
+        if (element.requestFullscreen) {
+            element.requestFullscreen().then(() => {
+                $toastContainer.detach().appendTo($(element));
 
-                // Force table redraw and fixedHeader recalculation after exiting fullscreen
+                // Force table redraw and fixedHeader recalculation after fullscreen
                 setTimeout(() => {
                     tableInstance.columns.adjust().draw();
                     tableInstance.fixedHeader.adjust();
                 }, 500);
             });
         }
+    } else {
+        document.exitFullscreen().then(() => {
+            $toastContainer.detach().appendTo('body');
+
+            // Force table redraw and fixedHeader recalculation after exiting fullscreen
+            setTimeout(() => {
+                tableInstance.columns.adjust().draw();
+                tableInstance.fixedHeader.adjust();
+            }, 500);
+        });
     }
+}
+
 
 
 
