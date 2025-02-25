@@ -1,4 +1,15 @@
 $(document).ready(function () {
+
+    // Add an expandable column properly during DataTables initialization with Font Awesome icon
+    const expandableColumn = {
+        className: 'details-control',
+        orderable: false,
+        data: null,
+        defaultContent: '<i class="fa fa-plus-square" aria-hidden="true"></i>', // Use Font Awesome icon
+        width: "30px"
+    };
+
+
     // Initialize DataTables for Occurrences Table
     const $occurrenceTable = $('#occurrence_table').DataTable({
         ajax: {
@@ -61,6 +72,7 @@ $(document).ready(function () {
             leftColumns: 4 // Freezing the first 4 columns
         },
         columns: [
+            expandableColumn, // Add expandable column first
             { data: 'Comments' },
             { data: 'E2_Occurrence_ID' },
             { data: 'File_number' },
@@ -121,7 +133,7 @@ $(document).ready(function () {
         order: [[2, 'asc']],
         columnDefs: [
             {
-                targets: 14, // Index for Operation_type_Level_1 (adjust if needed)
+                targets: 15, // Index for Operation_type_Level_1 (adjust if needed)
                 createdCell: function (td, cellData, rowData, row, col) {
                     if (cellData === 'Medical') {
                         $(td).css('background-color', '#d4edda'); // Light green
@@ -197,6 +209,7 @@ $(document).ready(function () {
         fixedHeader: true, // Enable fixed header
         scrollX: true,
         columns: [
+            expandableColumn, // Add expandable column first
             { data: 'user' },
             {
                 data: 'time',
@@ -272,6 +285,7 @@ $(document).ready(function () {
             leftColumns: 4 // Freezing the first 4 columns
         },
         columns: [
+            expandableColumn, // Add expandable column first
             { data: 'Comments' },
             { data: 'E2_Occurrence_ID' },
             { data: 'File_number' },
@@ -332,7 +346,7 @@ $(document).ready(function () {
         order: [[2, 'asc']],
         columnDefs: [
             {
-                targets: 14, // Index for Operation_type_Level_1 (adjust if needed)
+                targets: 15, // Index for Operation_type_Level_1 (adjust if needed)
                 createdCell: function (td, cellData, rowData, row, col) {
                     if (cellData === 'Medical') {
                         $(td).css('background-color', '#d4edda'); // Light green
@@ -349,6 +363,14 @@ $(document).ready(function () {
             }
         ]
     });
+
+    // Initialize the behavior for multiple tables
+    addExpandableRowBehavior('#occurrence_table', $occurrenceTable);
+    addExpandableRowBehavior('#excluded_table', $excludedTable);
+    addExpandableRowBehavior('#audit_table', $auditTable);
+
+
+
 
     // Reset selections and update button states on tab switch
     $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -580,4 +602,59 @@ $(document).ready(function() {
         $('.apps').css('height', launcherMinHeight + 'px');
     });
 });
+
+
+
+// Generic function for formatting row details dynamically based on DataTable column order
+function formatRowDetails(rowData, dataTableInstance) {
+    let details = '<div class="row-card-view p-3"><h5>Detailed Information</h5>';
+
+    // Retrieve columns from the DataTable instance in their display order
+    const columns = dataTableInstance.settings().init().columns;
+
+    // Loop through the ordered columns to display data in the same order
+    columns.forEach(column => {
+        // Skip expandable control column (null data)
+        if (column.data) {
+            let value = rowData[column.data];
+            let formattedValue = value;
+
+            // Format date fields
+            if (column.data.toLowerCase().includes('date') && value) {
+                formattedValue = moment(value).format('DD/MM/YYYY HH:mm:ss');
+            }
+
+            // Format the column name for display
+            const formattedKey = column.data.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+
+            details += `<p><strong>${formattedKey}:</strong> ${formattedValue || 'N/A'}</p>`;
+        }
+    });
+
+    details += '</div>';
+    return details;
+}
+
+// Generic function to add expandable behavior with consistent Font Awesome icons
+function addExpandableRowBehavior(tableSelector, dataTableInstance) {
+    $(`${tableSelector} tbody`).on('click', 'td.details-control', function (e) {
+        e.stopPropagation(); // Prevent row selection on icon click
+
+        const tr = $(this).closest('tr');
+        const row = dataTableInstance.row(tr);
+
+        if (row.child.isShown()) {
+            row.child.hide();
+            $(this).html('<i class="fa fa-plus-square" aria-hidden="true"></i>'); // Properly reset to plus icon
+            tr.removeClass('shown'); // Remove highlight
+        } else {
+            row.child(formatRowDetails(row.data(), dataTableInstance)).show();
+            $(this).html('<i class="fa fa-minus-square" aria-hidden="true"></i>'); // Minus icon when expanded
+            tr.addClass('shown'); // Add highlight
+        }
+    });
+}
+
+
+
 
